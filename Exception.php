@@ -1,5 +1,5 @@
 <?php
-namespace TijsVerkoyen\Twitter;
+namespace ThothMedia\Twitter;
 
 /**
  * Twitter Exception class

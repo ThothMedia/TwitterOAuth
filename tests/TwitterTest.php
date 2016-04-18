@@ -4,7 +4,7 @@ require_once '../../../autoload.php';
 require_once 'config.php';
 require_once 'PHPUnit/Framework/TestCase.php';
 
-use \TijsVerkoyen\Twitter\Twitter;
+use \ThothMedia\Twitter\Twitter;
 
 /**
  * test case.
