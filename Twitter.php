@@ -1027,7 +1027,6 @@ class Twitter
     {
         // build parameters
         $parameters['status'] = (string) $status;
-        $parameters['status'] = utf8_encode($parameters['status']);
         if ($inReplyToStatusId != null) {
             $parameters['in_reply_to_status_id'] = (string) $inReplyToStatusId;
         }
