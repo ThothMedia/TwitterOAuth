@@ -4,10 +4,10 @@ namespace ThothMedia\Twitter;
 /**
  * Twitter class
  *
- * @author    	Tijs Verkoyen <php-twitter@verkoyen.eu>
- * @version		2.3.1
- * @copyright	Copyright (c), Tijs Verkoyen. All rights reserved.
- * @license		BSD License
+ * @author      Tijs Verkoyen <php-twitter@verkoyen.eu>
+ * @version     2.3.1
+ * @copyright   Copyright (c), Tijs Verkoyen. All rights reserved.
+ * @license     BSD License
  */
 class Twitter
 {
@@ -28,49 +28,49 @@ class Twitter
     /**
      * A cURL instance
      *
-     * @var	resource
+     * @var resource
      */
     protected $curl;
 
     /**
      * The consumer key
      *
-     * @var	string
+     * @var string
      */
     protected $consumerKey;
 
     /**
      * The consumer secret
      *
-     * @var	string
+     * @var string
      */
     protected $consumerSecret;
 
     /**
      * The oAuth-token
      *
-     * @var	string
+     * @var string
      */
     protected $oAuthToken = '';
 
     /**
      * The oAuth-token-secret
      *
-     * @var	string
+     * @var string
      */
     protected $oAuthTokenSecret = '';
 
     /**
      * The timeout
      *
-     * @var	int
+     * @var int
      */
     protected $timeOut = 10;
 
     /**
      * The user agent
      *
-     * @var	string
+     * @var string
      */
     protected $userAgent;
 
@@ -238,7 +238,7 @@ class Twitter
 
     /**
      * Make an call to the oAuth
-     * @todo	refactor me
+     * @todo    refactor me
      *
      * @param  string          $method     The method.
      * @param  array[optional] $parameters The parameters.
@@ -439,6 +439,8 @@ class Twitter
         $options[CURLOPT_SSL_VERIFYHOST] = false;
         $options[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_1;
         $options[CURLOPT_HTTPHEADER] = $headers;
+        $options[CURLOPT_HEADER] = 1;
+
 
         // init
         if($this->curl == null) $this->curl = curl_init();
@@ -448,6 +450,12 @@ class Twitter
 
         // execute
         $response = curl_exec($this->curl);
+
+        $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
+        $header_text = substr($response, 0, $header_size);
+        $header = $this->getHeaderArrayFromHeaderString($header_text);
+        $response = substr($response, $header_size);
+
         $headers = curl_getinfo($this->curl);
 
         // fetch errors
@@ -466,6 +474,12 @@ class Twitter
 
         // we expect JSON, so decode it
         $json = @json_decode($response, $this->returnAsArray);
+
+        if($this->returnAsArray) {
+            $json['header'] = $header;
+        } else {
+            $json->header = @json_decode(json_encode($header), $this->returnAsArray);
+        }
 
         // validate JSON
         if ($json === null) {
@@ -1498,7 +1512,7 @@ class Twitter
      * Returns a collection of numeric IDs for every user who has a pending request to follow the authenticating user.
      *
      * @param string[optional] $cursor Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first "page."
-      * @param  bool[optional] 	$stringifyIds	Many programming environments will not consume our Tweet ids due to their size. Provide this option to have ids returned as strings instead.
+      * @param  bool[optional]  $stringifyIds   Many programming environments will not consume our Tweet ids due to their size. Provide this option to have ids returned as strings instead.
      * @return array
      */
     public function friendshipsIncoming($cursor = null, $stringifyIds = true)
@@ -3157,5 +3171,20 @@ class Twitter
             'application/rate_limit_status.json',
             $parameters
         );
+    }
+
+    private function getHeaderArrayFromHeaderString($header_text)
+    {
+        $headers = array();
+        foreach (explode("\r\n", $header_text) as $i => $line) {
+            if ($i === 0)
+                $headers['http_code'] = $line;
+            elseif($line != "")
+            {
+                list ($key, $value) = explode(': ', $line);
+                $headers[str_replace("-", "_", $key)] = $value;
+            }
+        }
+        return $headers;
     }
 }
