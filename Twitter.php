@@ -738,7 +738,7 @@ class Twitter
      */
     public function statusesMentionsTimeline(
         $count = null, $sinceId = null, $maxId = null,
-        $trimUser = null, $contributorDetails = null, $includeEntities = null
+        $trimUser = null, $contributorDetails = null, $includeEntities = null, $tweetMode = null
     )
     {
         // build parameters
@@ -761,6 +761,9 @@ class Twitter
         }
         if ($includeEntities !== null) {
             $parameters['include_entities'] = ($includeEntities) ? 'true' : 'false';
+        }
+        if ($tweetMode !== null) {
+            $parameters['tweet_mode'] = $tweetMode;
         }
 
         // make the call
@@ -790,7 +793,7 @@ class Twitter
     public function statusesUserTimeline(
         $userId = null, $screenName = null, $sinceId = null, $count = null,
         $maxId = null, $trimUser = null, $excludeReplies = null,
-        $contributorDetails = null, $includeRts = null
+        $contributorDetails = null, $includeRts = null, $tweetMode = null
     )
     {
         // validate
@@ -826,6 +829,9 @@ class Twitter
         }
         if ($includeRts !== null) {
             $parameters['include_rts'] = ($includeRts) ? 'true' : 'false';
+        }
+        if ($tweetMode !== null) {
+            $parameters['tweet_mode'] = $tweetMode;
         }
 
         // make the call
