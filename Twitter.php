@@ -1028,7 +1028,7 @@ class Twitter
      */
     public function statusesUpdate(
         $status, $inReplyToStatusId = null, $lat = null, $long = null,
-        $placeId = null, $displayCoordinates = null, $trimUser = null
+        $placeId = null, $displayCoordinates = null, $trimUser = null, $tweetMode = null
     )
     {
         // build parameters
@@ -1050,6 +1050,9 @@ class Twitter
         }
         if ($trimUser) {
             $parameters['trim_user'] = ($trimUser) ? 'true' : 'false';
+        }
+        if ($tweetMode !== null) {
+            $parameters['tweet_mode'] = $tweetMode;
         }
 
         // make the call
